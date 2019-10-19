@@ -10,14 +10,23 @@
 template <typename vertex_type, typename proc_type>
 struct edgepart_writer {
     char *buffer;
-    std::ofstream fout;
+    std::ofstream fout_r;
+    std::ofstream fout_e;
+
+    // edgepart_writer(const std::string &basefilename)
+    //     : fout(partitioned_name(basefilename)) {
+    //     size_t s = std::max(sizeof(vertex_type) + sizeof(proc_type),
+    //                         sizeof(vertex_type) + sizeof(vertex_type) +
+    //                         sizeof(proc_type));
+    //     buffer = new char[sizeof(char) + s];
+    // }
 
     edgepart_writer(const std::string &basefilename)
-        : fout(partitioned_name(basefilename))
-    {
+        : fout_r(partitioned_rfile_name(basefilename)),
+          fout_e(partitioned_efile_name(basefilename)) {
         size_t s = std::max(sizeof(vertex_type) + sizeof(proc_type),
                             sizeof(vertex_type) + sizeof(vertex_type) +
-                                sizeof(proc_type));
+                            sizeof(proc_type));
         buffer = new char[sizeof(char) + s];
     }
 
@@ -27,8 +36,7 @@ struct edgepart_writer {
      * Replaces \255 with \255\1
      * Replaces \\n with \255\0
      */
-    static std::string escape_newline(char *ptr, size_t strmlen)
-    {
+    static std::string escape_newline(char *ptr, size_t strmlen) {
         size_t ctr = 0;
         for (size_t i = 0; i < strmlen; ++i) {
             ctr += (ptr[i] == (char)255 || ptr[i] == '\n');
@@ -55,27 +63,27 @@ struct edgepart_writer {
         return ret;
     }
 
-    void save_vertex(vertex_type v, proc_type proc)
-    {
-        buffer[0] = 0;
-        memcpy(buffer + 1, &v, sizeof(vertex_type));
-        memcpy(buffer + 1 + sizeof(vertex_type), &proc,
-               sizeof(proc_type));
-        std::string result = escape_newline(
-            buffer, 1 + sizeof(vertex_type) + sizeof(proc_type));
-        fout << result << '\n';
+    void save_vertex(vertex_type v, proc_type proc) {
+        // buffer[0] = 0;
+        // memcpy(buffer + 1, &v, sizeof(vertex_type));
+        // memcpy(buffer + 1 + sizeof(vertex_type), &proc,
+        //        sizeof(proc_type));
+        // std::string result = escape_newline(
+        //     buffer, 1 + sizeof(vertex_type) + sizeof(proc_type));
+        // fout << result << '\n';
+        fout_r << v << "\t" << proc << "\n";
     }
 
-    void save_edge(vertex_type from, vertex_type to, proc_type proc)
-    {
-        buffer[0] = 1;
-        memcpy(buffer + 1, &from, sizeof(vertex_type));
-        memcpy(buffer + 1 + sizeof(vertex_type), &to, sizeof(vertex_type));
-        memcpy(buffer + 1 + sizeof(vertex_type) + sizeof(vertex_type), &proc,
-               sizeof(proc_type));
-        std::string result = escape_newline(buffer, 1 + sizeof(vertex_type) +
-                                                        sizeof(vertex_type) +
-                                                        sizeof(proc_type));
-        fout << result << '\n';
+    void save_edge(vertex_type from, vertex_type to, proc_type proc) {
+        // buffer[0] = 1;
+        // memcpy(buffer + 1, &from, sizeof(vertex_type));
+        // memcpy(buffer + 1 + sizeof(vertex_type), &to, sizeof(vertex_type));
+        // memcpy(buffer + 1 + sizeof(vertex_type) + sizeof(vertex_type), &proc,
+        //        sizeof(proc_type));
+        // std::string result = escape_newline(buffer, 1 + sizeof(vertex_type) +
+        //                                                 sizeof(vertex_type) +
+        //                                                 sizeof(proc_type));
+        // fout << result << '\n';
+        fout_e << from << "\t" << to << "\t" << proc << "\t" << 0 << "\n";
     }
 };

@@ -3,6 +3,12 @@ project (edgepart)
 
 set(CMAKE_VERBOSE_MAKEFILE off)
 
+include("cmake/FindGlog.cmake")
+include("cmake/FindGFlags.cmake")
+
+find_package(Boost COMPONENTS system filesystem)
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+
 # find_package (glog REQUIRED)
 # find_package (gflags REQUIRED)
 # find_package (Boost REQUIRED)
@@ -39,5 +45,5 @@ add_executable (graph2edgelist
     src/util.cpp
     src/conversions.cpp)
 
-target_link_libraries (main glog gflags threadpool11)
-target_link_libraries (graph2edgelist glog gflags threadpool11)
+target_link_libraries (main ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} threadpool11)
+target_link_libraries (graph2edgelist ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} threadpool11)

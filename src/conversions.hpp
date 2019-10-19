@@ -7,10 +7,11 @@
 
 #include "util.hpp"
 
+#define READ_BUF_SIZE 100000000 // how many edges to read at one time
+
 DECLARE_string(filetype);
 
-class Converter
-{
+class Converter {
   protected:
     std::string basefilename;
     vid_t num_vertices;
@@ -19,8 +20,7 @@ class Converter
     std::ofstream fout;
     boost::unordered_map<vid_t, vid_t> name2vid;
 
-    vid_t get_vid(vid_t v)
-    {
+    vid_t get_vid(vid_t v) {
         auto it = name2vid.find(v);
         if (it == name2vid.end()) {
             name2vid[v] = num_vertices;
@@ -35,18 +35,16 @@ class Converter
     virtual ~Converter() {}
     virtual bool done() { return is_exists(binedgelist_name(basefilename)); }
 
-    virtual void init()
-    {
+    virtual void init() {
         num_vertices = 0;
         num_edges = 0;
-        degrees.reserve(1<<20);
+        degrees.reserve(1 << 20);
         fout.open(binedgelist_name(basefilename), std::ios::binary);
         fout.write((char *)&num_vertices, sizeof(num_vertices));
         fout.write((char *)&num_edges, sizeof(num_edges));
     }
 
-    virtual void add_edge(vid_t from, vid_t to)
-    {
+    virtual void add_edge(vid_t from, vid_t to) {
         if (to == from) {
             LOG(WARNING) << "Tried to add self-edge " << from << "->" << to
                          << std::endl;

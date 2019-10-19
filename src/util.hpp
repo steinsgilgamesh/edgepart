@@ -36,54 +36,58 @@ void preada(int f, char *buf, size_t nbytes, size_t off);
 void reada(int f, char *buf, size_t nbytes);
 void writea(int f, char *buf, size_t nbytes);
 
-inline std::string binedgelist_name(const std::string &basefilename)
-{
+inline std::string binedgelist_name(const std::string &basefilename) {
     std::stringstream ss;
     ss << basefilename << ".binedgelist";
     return ss.str();
 }
-inline std::string shuffled_binedgelist_name(const std::string &basefilename)
-{
+inline std::string shuffled_binedgelist_name(const std::string &basefilename) {
     std::stringstream ss;
     ss << basefilename << ".shuffled.binedgelist";
     return ss.str();
 }
-inline std::string degree_name(const std::string &basefilename)
-{
+inline std::string degree_name(const std::string &basefilename) {
     std::stringstream ss;
     ss << basefilename << ".degree";
     return ss.str();
 }
 
-inline std::string partitioned_name(const std::string &basefilename)
-{
+inline std::string partitioned_name(const std::string &basefilename) {
     std::stringstream ss;
     ss << basefilename << ".edgepart." << FLAGS_p; // chenzi: add partition number to the output file
     return ss.str();
 }
 
-inline std::string hilbert_name(const std::string &basefilename)
-{
+inline std::string partitioned_efile_name(const std::string &basefilename) {
+    std::stringstream ss;
+    ss << basefilename << ".e." << FLAGS_p; // chenzi: add partition number to the output file
+    return ss.str();
+}
+
+inline std::string partitioned_rfile_name(const std::string &basefilename) {
+    std::stringstream ss;
+    ss << basefilename << ".r." << FLAGS_p; // chenzi: add partition number to the output file
+    return ss.str();
+}
+
+inline std::string hilbert_name(const std::string &basefilename) {
     std::stringstream ss;
     ss << basefilename << ".hilbert.bin";
     return ss.str();
 }
-inline std::string sorted_hilbert_name(const std::string &basefilename)
-{
+inline std::string sorted_hilbert_name(const std::string &basefilename) {
     std::stringstream ss;
     ss << basefilename << ".sorted_hilbert.bin";
     return ss.str();
 }
 
 
-inline bool is_exists(const std::string &name)
-{
+inline bool is_exists(const std::string &name) {
     struct stat buffer;
     return (stat(name.c_str(), &buffer) == 0);
 }
 
-class Timer
-{
+class Timer {
   private:
     std::chrono::system_clock::time_point t1, t2;
     double total;
@@ -92,8 +96,7 @@ class Timer
     Timer() : total(0) {}
     void reset() { total = 0; }
     void start() { t1 = std::chrono::system_clock::now(); }
-    void stop()
-    {
+    void stop() {
         t2 = std::chrono::system_clock::now();
         std::chrono::duration<double> diff = t2 - t1;
         total += diff.count();
